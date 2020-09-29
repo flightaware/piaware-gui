@@ -1,0 +1,3 @@
+#!/bin/sh
+ulimit -v 64000
+exec wish8.6 /usr/lib/piaware-gui/main.tcl "$@"

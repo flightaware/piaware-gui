@@ -1,0 +1,17 @@
+# PiAware GUI - TFT LCD Screen
+
+[Unit]
+Description=PiAware GUI for TFT LCD screen
+#After=dev-fb1.device config-ready.target
+Wants=network-online.target
+#After=network-online.target
+
+[Service]
+User=root
+ExecStart=/usr/bin/piaware-gui-launcher tft
+Type=simple
+Restart=always
+RestartSec=30
+
+[Install]
+WantedBy=default.target

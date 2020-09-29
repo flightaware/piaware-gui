@@ -1,0 +1,22 @@
+#!/usr/bin/env tclsh8.6
+
+set type "auto"
+set display ":1"
+set layout "TFT35"
+
+try {
+	puts stderr "Launching piaware-gui for display type $type, display $display, layout $layout"
+	exec -ignorestderr /usr/bin/xinit /usr/bin/piaware-gui -type $type -- $display vt7 -layout $layout </dev/null >@stdout 2>@stderr
+	exit 0
+} trap {CHILDSTATUS} {} {
+	set status [lindex $::errorCode 2]
+	puts stderr "piaware-gui exited with status $status"
+	exit $status
+} trap {CHILDKILLED} {} {
+	set signal [lindex $::errorCode 2]
+	puts stderr "piaware-gui exited with signal $signal"
+	exit 126
+} on error {result} {
+	puts stderr "piaware-gui exec failed: $result"
+	exit 127
+}

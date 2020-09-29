@@ -1,0 +1,5 @@
+piaware-gui (4.0) stable; urgency=medium
+
+  * Initial release of Tcl/Tk GUI interface for PiAware SD card installs
+
+ -- Eric Tran <eric.tran@flightaware.com>  Wed, 23 Sep 2020 17:06:00 -6000

@@ -1,0 +1,27 @@
+# PiAware config.txt for 3.5" LCD (newer Orange)
+
+[pi1]
+# conservative overclocking
+arm_freq=800
+sdram_freq=500
+core_freq=300
+
+[all]
+# disable audio
+dtparam=audio=no
+
+# force sensible HDMI setttings
+hdmi_force_hotplug=1
+hdmi_drive=1
+hdmi_group=2
+hdmi_mode=16
+disable_overscan=1
+
+# increase max USB current on more recent models
+max_usb_current=1
+
+# configure the LCD
+dtparam=spi=on
+dtoverlay=waveshare35a
+
+# rpi-bootconfig will add a kernel section automatically
