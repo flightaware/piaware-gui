@@ -135,6 +135,7 @@ proc wifi_scan {interface} {
 #
 proc bgerror {error} {
 	puts stderr "GUI error : $error"
+	puts stderr "$::errorInfo"
 }
 
 set ::countryDict [dict create {Afghanistan} AF	\
@@ -570,7 +571,7 @@ proc sshd_is_up {} {
 			break
 		}
 	}
-	close $fp
+	catch {close $fp}
 	return $active
 }
 
@@ -614,9 +615,9 @@ proc enable_sshd {} {
 }
 
 #
-# disable_ssh - turn off sshd to disable remote login via ssh
+# disable_sshd - turn off sshd to disable remote login via ssh
 #
-proc disable_ssh {} {
+proc disable_sshd {} {
 	::fa_sudo::exec_as -root -- update-rc.d ssh disable
 	::fa_sudo::exec_as -root -- invoke-rc.d ssh stop
 }
