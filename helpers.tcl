@@ -616,10 +616,12 @@ proc enable_sshd {} {
 
 #
 # disable_sshd - turn off sshd to disable remote login via ssh
+#   and kill all active sessions
 #
 proc disable_sshd {} {
 	::fa_sudo::exec_as -root -- update-rc.d ssh disable
 	::fa_sudo::exec_as -root -- invoke-rc.d ssh stop
+	::fa_sudo::exec_as -root -- pkill --signal HUP sshd
 }
 
 # vim: set ts=4 sw=4 sts=4 noet :

@@ -682,7 +682,7 @@ proc button_ssh_enable {} {
 }
 
 proc button_ssh_disable {} {
-	set message "All active ssh sessions will remain.  No new ones will be allowed.  Continue?"
+	set message "All active ssh sessions will be terminated and no new ones will be allowed.  Continue?"
 	set answer [FA_messagebox .bottom "question" "yesno" "$message"]
 	if {$answer == "Yes"} {
 		try {
