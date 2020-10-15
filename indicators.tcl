@@ -672,11 +672,13 @@ proc button_ssh_configuration {} {
 }
 
 proc button_ssh_enable {} {
+	if {[sshd_is_up]} return
 	set message "Remote login via ssh will be enabled.  Please change the password of the 'pi' user if you haven't. Continue?"
 	set answer [FA_messagebox .bottom "question" "yesno" "$message"]
 	if {$answer == "Yes"} {
-	enable_sshd
-	destroy .sshconfig
+		enable_sshd
+		destroy .sshconfig
+	}
 }
 
 proc button_ssh_disable {} {
