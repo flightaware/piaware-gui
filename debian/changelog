@@ -1,8 +1,8 @@
-piaware-gui (5.0) UNRELEASED; urgency=medium
+piaware-gui (5.0) stable; urgency=medium
 
   * No-changes for PiAware 5
 
- -- Eric Tran <eric.tran@flightaware.com>  Fri, 05 Mar 2021 07:30:00 -6000
+ -- Eric Tran <eric.tran@flightaware.com>  Thu, 11 Mar 2021 07:30:00 -6000
 
 piaware-gui (4.0) stable; urgency=medium
 
