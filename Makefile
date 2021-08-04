@@ -20,4 +20,4 @@ install:
 restart:
 	sudo systemctl restart piaware-gui-tft
 
-install-restart:	restart install
+install-restart:	install restart
