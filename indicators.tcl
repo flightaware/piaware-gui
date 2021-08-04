@@ -620,9 +620,8 @@ proc button_system {} {
 }
 
 proc button_system_settings {} {
-
 #	removed some options for initial version
-	set menuList {status "System Status" log "Log"}
+	set menuList {status "System Status" log "Log" ssh_configuration "SSH Configuration" calibrate_touchscreen "Calibrate Touchscreen"}
 	create_newmenu .systemsettings "System Settings" "destroy .systemsettings" "destroy .systemsettings"
 
 	grid [frame .systemsettings.bottom] -row 1 -columnspan 3 -sticky snew
@@ -657,6 +656,64 @@ proc button_status {} {
 	create_textbox .systemstatus
 
 	periodically_update_systemstatus
+}
+
+proc button_ssh_configuration {} {
+	set menuList {ssh_enable "Enable" ssh_disable "Disable"}
+	if {[sshd_is_up]} {
+		set prompt "SSH Configuration (sshd is UP)"
+	} else {
+		set prompt "SSH Configuration (sshd is DOWN)"
+	}
+	create_newmenu .sshconfig $prompt "destroy .sshconfig" "destroy .sshconfig"
+
+	grid [frame .sshconfig.bottom] -row 1 -columnspan 3 -sticky snew
+	create_newmenu_options .sshconfig.bottom $menuList
+}
+
+proc button_ssh_enable {} {
+	if {[sshd_is_up]} return
+	set message "Remote login via ssh will be enabled.  Please change the password of the 'pi' user if you haven't. Continue?"
+	set answer [FA_messagebox .bottom "question" "yesno" "$message"]
+	if {$answer == "Yes"} {
+		enable_sshd
+		destroy .sshconfig
+	}
+}
+
+proc button_ssh_disable {} {
+	set message "All active ssh sessions will be terminated and no new ones will be allowed.  Continue?"
+	set answer [FA_messagebox .bottom "question" "yesno" "$message"]
+	if {$answer == "Yes"} {
+		try {
+			disable_sshd
+		} on error {x y} {
+			puts stderr "button_ssh_disable: x $x, y $y"
+		}
+	}
+	destroy .sshconfig
+}
+
+#
+# button_calibrate_touchscreen - perform touchscreen calibration
+#
+proc button_calibrate_touchscreen {} {
+	set fp [open "|xinput_calibrator" r]
+	set copying 0
+	while {[gets $fp line] >= 0} {
+		if {!$copying && [string match "Section*" $line]} {
+			set copying 1
+			set ofp [open "/etc/X11/xorg.conf.d/99-flightaware-touchscreen-calibration.conf" w]
+		}
+
+		if {$copying} {
+			puts $ofp $line
+		}
+	}
+	close $fp
+	if {$copying} {
+		close $ofp
+	}
 }
 
 ######################

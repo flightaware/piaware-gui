@@ -16,3 +16,8 @@ install:
 	install *.tcl *.gif $(DESTDIR)$(PREFIX)/lib/$(PROGNAME)
 	install ./icons/*.png ./icons/*.gif $(DESTDIR)$(PREFIX)/lib/$(PROGNAME)/icons
 	install -m 0755 $(PROGNAME) $(DESTDIR)$(PREFIX)/bin
+
+restart:
+	sudo systemctl restart piaware-gui-tft
+
+install-restart:	restart install

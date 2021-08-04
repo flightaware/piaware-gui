@@ -135,6 +135,7 @@ proc wifi_scan {interface} {
 #
 proc bgerror {error} {
 	puts stderr "GUI error : $error"
+	puts stderr "$::errorInfo"
 }
 
 set ::countryDict [dict create {Afghanistan} AF	\
@@ -556,6 +557,71 @@ proc detect_display {} {
 	}
 
 	return $result
+}
+
+#
+# sshd_is_up - return 1 if sshd is active, else 0
+#
+proc sshd_is_up {} {
+	set active 1
+	set fp [open "|service ssh status"]
+	while {[gets $fp line] >= 0} {
+		if {[string match "*inactive*" $line]} {
+			set active 0
+			break
+		}
+	}
+	catch {close $fp}
+	return $active
+}
+
+#
+# is_generating_ssh_keys - return 1 if ssh is currently generating ssh keys, else 0
+#
+proc is_generating_ssh_keys {} {
+	try {
+		set fp [open /var/log/regen_ssh_keys.log]
+	} trap {POSIX ENOENT} {} {
+		return 0
+	}
+
+	set generating 1
+	while {[gets $fp line] >= 0} {
+		if {[string match "finished*" $line]} {
+			set generating 0
+			break
+		}
+	}
+	close $fp
+	return $generating
+}
+
+#
+# enable_sshd - turn on sshd to allow remote login via ssh
+#
+proc enable_sshd {} {
+	while {[is_generating_ssh_keys]} {
+		puts "ssh keys still generating, waiting..."
+		sleep 5
+	}
+
+	if {[sshd_is_up]} {
+		return
+	}
+
+	::fa_sudo::exec_as -root -- ssh-keygen -A
+	::fa_sudo::exec_as -root -- update-rc.d ssh enable
+	::fa_sudo::exec_as -root -- invoke-rc.d ssh start
+}
+
+#
+# disable_sshd - turn off sshd to disable remote login via ssh
+#   and kill all active sessions
+#
+proc disable_sshd {} {
+	::fa_sudo::exec_as -root -- update-rc.d ssh disable
+	::fa_sudo::exec_as -root -- invoke-rc.d ssh stop
+	::fa_sudo::exec_as -root -- pkill --signal HUP sshd
 }
 
 # vim: set ts=4 sw=4 sts=4 noet :
