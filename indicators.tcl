@@ -621,7 +621,7 @@ proc button_system {} {
 
 proc button_system_settings {} {
 #	removed some options for initial version
-	set menuList {status "System Status" log "Log" ssh_configuration "SSH Configuration" calibrate_touchscreen "Calibrate Touchscreen"}
+	set menuList {status "System Status" log "Log" ssh_configuration "SSH Configuration" calibrate_touchscreen "Calibrate Touchscreen" change_password "Change Password"}
 	create_newmenu .systemsettings "System Settings" "destroy .systemsettings" "destroy .systemsettings"
 
 	grid [frame .systemsettings.bottom] -row 1 -columnspan 3 -sticky snew
@@ -714,6 +714,75 @@ proc button_calibrate_touchscreen {} {
 	if {$copying} {
 		close $ofp
 	}
+}
+
+# Menu to show when Reset Password button is pressed
+proc button_change_password {} {
+	set menuTitle "Change Password"
+	create_newmenu .entercurrentpassword "Enter current password" "destroy .entercurrentpassword" "destroy .entercurrentpassword"
+	setup_keypad_36key .entercurrentpassword "check_password_prompt .entercurrentpassword pi"
+}
+
+# Validate current password
+proc check_password_prompt {frame user action {value ""}} {
+	switch -- $action {
+		"cancel" {
+			destroy $frame
+		}
+
+		"ok" {
+			destroy $frame
+			set valid_password [validate_password $user $value]
+			if { $valid_password } {
+				set_new_password_menu
+			} else {
+				FA_messagebox .bottom "question" "ok" "Invalid Password"
+			}
+		}
+	}
+}
+
+# Validate user's password by comparing /etc/shadow hashes
+proc validate_password {user password} {
+	try {
+		set hash [::fa_sudo::open_as -root "|cat /etc/shadow"]
+		while {[gets $hash line] >= 0} {
+			set fields [split $line :]
+			set username [lindex $fields 0]
+			if {$username ne $user} {
+				continue
+			}
+			set master_hash [lindex $fields 1]
+			set hash_fields [split $master_hash $]
+			set hash_type [lindex $hash_fields 1]
+			switch $hash_type {
+				"5" {set hash_algorithm "sha-256"}
+				"6" {set hash_algorithm "sha-512"}
+				default {return false}
+			}
+
+			set hash_salt [lindex $hash_fields 2]
+			set hash_password [lindex $hash_fields 3]
+			#puts "type: $hash_type, hash_salt: $hash_salt, hash_password: $hash_password"
+			set input_hash_ch [::fa_sudo::open_as -root "|mkpasswd -m $hash_algorithm $password $hash_salt"]
+			set input_hash [read -nonewline $input_hash_ch]
+			if { $master_hash eq $input_hash } {
+				return true
+			} else {
+				return false
+			}
+		}
+	} on error {result} {
+		puts "Error validating password"
+		return false
+	}
+
+	return false
+}
+
+proc set_new_password_menu {} {
+	create_newmenu .setnewpassword "Set New Password" "destroy .setnewpassword" "destroy .setnewpassword"
+	grid [frame .setnewpassword.bottom] -columnspan 3 -sticky snew
 }
 
 ######################
