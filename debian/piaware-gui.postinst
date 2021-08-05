@@ -17,6 +17,8 @@ set -e
 # for details, see https://www.debian.org/doc/debian-policy/ or
 # the debian-policy package
 
+NAME=piaware-gui
+
 update_xwrapper_config() {
     cat >/etc/X11/Xwrapper.config <<"EOF"
 allowed_users=anybody
@@ -29,6 +31,16 @@ case "$1" in
         # install/update LCD overlays
 	echo "Installing overlay files to /boot/overlays/"
         cp /usr/share/piaware-gui/overlays/*.dtbo /boot/overlays/
+
+        if ! getent group piaware >/dev/null
+        then
+            addgroup --system piaware
+        fi
+
+        if ! getent passwd pigui >/dev/null
+        then
+            adduser --system --home /usr/share/$NAME --no-create-home --quiet --ingroup piaware pigui
+        fi
 
 	# update Xwrapper config for rootless X changes
         if dpkg --compare-versions "$2" lt 6.0

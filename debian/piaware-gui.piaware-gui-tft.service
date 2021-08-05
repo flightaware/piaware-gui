@@ -7,7 +7,7 @@ Wants=network-online.target
 #After=network-online.target
 
 [Service]
-User=root
+User=pigui
 ExecStart=/usr/bin/piaware-gui-launcher tft
 Type=simple
 Restart=always
