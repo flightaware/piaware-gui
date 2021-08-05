@@ -14,24 +14,6 @@ proc logger {text} {
        puts stderr "[clock format [clock seconds] -format "%Y-%m-%d %H:%M:%SZ" -gmt 1] $text"
 }
 
-proc restart_network {} {
-	#::fa_sudo::exec_as -root -- /bin/systemctl --quiet stop ifplugd
-	::fa_sudo::exec_as -root -- /bin/systemctl --quiet stop networking
-	::fa_sudo::exec_as -root -- /bin/systemctl --quiet restart set-rfkill
-
-	# Work around to be able to turn off Wifi via FF GUI. generate-network-config will re-create it if
-	# wireless-network config setting says to do so. This will be properly fixed in piaware-support
-	::fa_sudo::exec_as -root -- rm -f /etc/wpa_supplicant/wpa_supplicant.conf
-
-	::fa_sudo::exec_as -root -- /bin/systemctl --quiet restart generate-network-config
-	::fa_sudo::exec_as -root -- /bin/systemctl --quiet daemon-reload
-	::fa_sudo::exec_as -root -- /bin/systemctl --quiet restart dhcpcd
-	::fa_sudo::exec_as -root -- /bin/systemctl --quiet restart rsyslog
-
-	::fa_sudo::exec_as -root -- /bin/systemctl --quiet start networking
-	#::fa_sudo::exec_as -root -- /bin/systemctl --quiet start ifplugd
-
-}
 #
 # fullscreen - resize the wish top-level window to be full screen
 #

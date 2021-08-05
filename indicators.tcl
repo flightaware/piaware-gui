@@ -290,7 +290,7 @@ proc change_gain {} {
 		piawareConfig set_option $::gain_option [.radiogain.bottom.slider get]
 	}
 	piawareConfig write_config
-	catch {::fa_services::attempt_service_restart dump1090 restart}
+	catch {::fa_services::restart_receiver}
 }
 
 proc button_accept_gain {} {
@@ -407,7 +407,7 @@ proc toggle_wired {} {
 		piawareConfig set_option wired-network yes
 	}
 	piawareConfig write_config
-	catch {restart_network}
+	catch {::fa_services::restart_network}
 	change_network_status
 
 	.wired.status.wiredState state !disabled
@@ -426,7 +426,7 @@ proc toggle_wireless_builtin {} {
                 piawareConfig set_option wireless-network yes
         }
         piawareConfig write_config
-	catch {restart_network}
+	catch {::fa_services::restart_network}
 	change_network_status
 
 	.wireless.status.wirelessState state !disabled
@@ -445,7 +445,7 @@ proc toggle_wireless_external {} {
                 piawareConfig set_option wireless-network yes
         }
         piawareConfig write_config
-	catch {restart_network}
+	catch {::fa_services::restart_network}
 	change_network_status
 
 	.usbwireless.status.wirelessState state !disabled
@@ -564,7 +564,7 @@ proc button_usb_wireless {} {
 
 proc button_renew_network {button} {
 	$button state disabled
-	restart_network
+	catch {::fa_services::restart_network}
 	$button state !disabled
 
 	#deselect the button after restarting network
@@ -923,7 +923,7 @@ proc update_wireless_config {frame key action {value ""}} {
 					}
 				} else {
 					#Wifi already on so we just restart the network
-					restart_network
+					catch {::fa_services::restart_network}
 				}
 			}
 
@@ -1009,7 +1009,7 @@ proc save_wifi_country {} {
 	set message "Restarting network. This will take some time."
 	FA_messagebox .bottom "question" "ok" "$message"
 
-	restart_network
+	catch {::fa_services::restart_network}
 
 	destroy .wificountry
 }

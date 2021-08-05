@@ -1,0 +1,24 @@
+# This file enables sudo access to allow pigui to run specific commands
+# as root. It should be installed as /etc/sudoers.d/pigui
+
+# allow pigui to update config files
+pigui ALL = NOPASSWD: /usr/lib/piaware_packages/helpers/update-piaware-config
+
+# allow pigui to shutdown/reboot/halt the system
+pigui ALL = NOPASSWD: /sbin/shutdown
+
+# allow pigui to access start up/shut down networks
+pigui ALL = NOPASSWD: /sbin/ifconfig
+
+# allow pigui to scan for wifi access points and bring the wifi interface up
+pigui ALL = NOPASSWD: /sbin/iwlist
+pigui ALL = NOPASSWD: /bin/ip
+
+# allow pigui to call netstat to find network port statuses
+pigui ALL = NOPASSWD: /bin/netstat
+
+# allow pigui to restart the receiver
+pigui ALL = NOPASSWD: /usr/lib/piaware_packages/helpers/restart-receiver
+
+# allow pigui to restart the network
+pigui ALL = NOPASSWD: /usr/lib/piaware_packages/helpers/restart-network
