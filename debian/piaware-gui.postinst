@@ -17,12 +17,24 @@ set -e
 # for details, see https://www.debian.org/doc/debian-policy/ or
 # the debian-policy package
 
+update_xwrapper_config() {
+    cat >/etc/X11/Xwrapper.config <<"EOF"
+allowed_users=anybody
+needs_root_rights=yes
+EOF
+}
 
 case "$1" in
     configure)
         # install/update LCD overlays
 	echo "Installing overlay files to /boot/overlays/"
         cp /usr/share/piaware-gui/overlays/*.dtbo /boot/overlays/
+
+	# update Xwrapper config for rootless X changes
+        if dpkg --compare-versions "$2" lt 6.0
+        then
+            update_xwrapper_config
+        fi
     ;;
 
     abort-upgrade|abort-remove|abort-deconfigure)
