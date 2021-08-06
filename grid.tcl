@@ -204,6 +204,7 @@ proc setup_font_32tft {} {
 	font create KeypadFont -family Lato -size 15 -weight bold
 	font create KeypadLetter -family Lato -size 14 -weight bold
 	font create InputFont -family Lato -size 10
+
 	set ::keypadButtonWidth 2
 	set ::menuBorderWidth 3
 
@@ -251,6 +252,7 @@ proc setup_font_hdmi {} {
 	font create KeypadFont -family Lato -size 24 -weight bold
 	font create KeypadLetter -family Lato -size 23 -weight bold
 	font create InputFont -family Lato -size 15
+
 	set ::keypadButtonWidth 4
 	set ::menuBorderWidth 5
 
@@ -364,10 +366,13 @@ proc FA_messagebox {parentwindow icon type message} {
 proc setup_main {} {
 	set t .top
 	set b .bottom
+	set c .settings
 	frame $t -cursor $::cursorStyle
 	frame $b -cursor $::cursorStyle
+	frame $c -cursor $::cursorStyle
 	pack $t -expand 0 -fill x
 	pack $b -expand 1 -fill both
+	pack $c -expand 1
 
 	#grid the top with widget
 	set ::ipaddressText "Local IP Address:"
@@ -380,7 +385,7 @@ proc setup_main {} {
 	} elseif {[piawareConfig get receiver-type] ne "none"} {
                 set menuList {radio "1090 Radio" piaware "PiAware" mlat "MLAT" flightaware "FlightAware Connection"}
 	} elseif {[piawareConfig get uat-receiver-type] ne "none"} {
-		set menuList {uat_radio "978 UAT Radio" flightaware "FlightAware Connection"}
+		set menuList {uat_radio "978 UAT Radio" piaware "PiAware" flightaware "FlightAware Connection"}
 	} else {
 		set menuList {no_radio "Radio" flightaware "FlightAware Connection"}
 	}
@@ -392,7 +397,7 @@ proc setup_main {} {
 		append textpath $b.$menuName text
 		ttk::button $b.$menuName -text $menuText -style statusUp.TButton -compound left -image statusRedIcon -width 20 -command "expand_device_status $b.$menuName $textpath"
 		label $textpath -text "No status information" -justify center -font MenuLabel -wraplength $wraplength
-		grid $b.$menuName -columnspan 5 -pady 2
+		grid $b.$menuName -columnspan 5 -pady 1
 		grid $textpath -columnspan 5
 		set ::indicator_path($menuName) $b.$menuName
 	}
@@ -404,85 +409,32 @@ proc setup_main {} {
 		grid remove $textpath
 	}
 
-	ttk::button $b.2 -text "Network Settings" -command "view_frame .network" -style mainMenu.TButton
-	ttk::button $b.3 -text "System Settings" -command "button_system" -style mainMenu.TButton
-	ttk::button $b.4 -text "SkyAware Map" -command "button_map" -style mainMenu.TButton
-
-	grid $b.2 -row 8 -column 0 -padx 10 -pady 5
-	grid $b.3 -row 8 -column 1 -columnspan 2 -padx 10 -pady 5
-	grid $b.4 -row 9 -columnspan 2 -padx 10 -pady 5
-
 	grid rowconfigure $b {0 1} -weight 0
 	grid columnconfigure $b {0 1} -weight 1
 
+	label $c.cputemplabel -font InputFont -text "CPU Temperature:"
+	label $c.cputemp -font InputFont -textvariable ::cputemperature
+	label $c.cpuloadlabel -font InputFont -text "CPU Load:"
+	label $c.cpuload -font InputFont -textvariable ::cpuload
+	label $c.uptimeLabel -font InputFont -text "System Uptime: "
+	label $c.uptime -font InputFont -textvariable ::uptime
+	grid $c.cputemplabel $c.cputemp -row 0
+	grid $c.cpuloadlabel $c.cpuload -row 1
+	grid $c.uptimeLabel $c.uptime -row 2
+
+	ttk::button $c.2 -text "Network Settings" -command "view_frame .network" -style mainMenu.TButton
+	ttk::button $c.3 -text "System Settings" -command "button_system" -style mainMenu.TButton
+	#ttk::button $c.4 -text "SkyAware Map" -command "button_map" -style mainMenu.TButton
+
+	grid $c.2 -column 0 -row 3 -padx 10 -pady 3 -padx 10
+	grid $c.3 -column 1 -row 3 -padx 10 -pady 3 -padx 10
+	#grid $c.4 -column 2 -row 3 -padx 10 -pady 3 -padx 10
+
+	grid rowconfigure $c {0 1 2 3} -weight 1
+	grid columnconfigure $c {0 1 2} -weight 1
+
 	#Set up network menu frames
 	setup_network_menu
-}
-
-proc setup_status_menu {} {
-	piawareConfig read_config
-	if {"beastgps" in $::hardware} {
-		set menuList {radio "1090 Radio" mlat "MLAT" gps "GPS" flightaware "FlightAware"}
-	} elseif {[piawareConfig get receiver-type] ne "none"} {
-                set menuList {radio "1090 Radio" mlat "MLAT"  flightaware "FlightAware"}
-	} elseif {[piawareConfig get uat-receiver-type] ne "none"} {
-		set menuList {uat_radio "978 UAT Radio" flightaware "FlightAware"}
-	} else {
-		set menuList {no_radio "Radio" flightaware "FlightAware"}
-	}
-
-	set f .status
-
-	create_newmenu $f "Device Status" "none" "view_frame ."
-
-	#Options require hidden text fields so can't use standard create_newmenu_options
-	set b "$f.bottom"
-
-	#set text wrappping to 80% of screen
-	set wraplength [expr ([winfo screenwidth $f] * .8)]
-
-	grid [frame $b] -row 1 -columnspan 3 -sticky snew
-	foreach {menuName menuText} $menuList {
-		set textpath ""
-		append textpath $b.$menuName text
-		ttk::button $b.$menuName -text $menuText -style statusUp.TButton -compound left -image statusRedIcon -width [winfo screenwidth .] -command "expand_device_status $b.$menuName $textpath"
-		label $textpath -text "No status information" -justify left -font MenuLabel -wraplength $wraplength
-		grid $b.$menuName -sticky we
-		grid $textpath -sticky w
-
-		#Set the indicator path so it can be update with "status menuname green"
-		set ::indicator_path($menuName) $b.$menuName
-		#puts "::indicator_path($menuName) $b.$menuName"
-	}
-
-	#Hide all the text fields
-	foreach {menuName menuText} $menuList {
-		set textpath ""
-		append textpath $b.$menuName text
-		grid remove $textpath
-	}
-
-	grid rowconfigure $f $f.bottom -weight 0
-
-	# Create a new frame for system information under Device Status page
-	set c "$f.status_sysinfo"
-	grid [frame $c] -columnspan 3 -sticky news
-	grid columnconfigure $c 1 -weight 1
-
-	grid [ttk::separator $c.seperator -orient horizontal] -sticky ew -columnspan 3
-	label $c.cputemplabel -text "CPU Temperature: " -font LabelFont -bg white -fg $::FADarkBlue -justify left
-	label $c.cputemp -textvariable ::cputemperature -font LabelFont -bg white -fg $::FADarkBlue -justify left
-	grid $c.cputemplabel $c.cputemp -sticky w
-
-	label $c.cpuloadlabel -text "CPU Load: " -font LabelFont -bg white -fg $::FADarkBlue -justify left
-	label $c.cpuload -textvariable ::cpuload -font LabelFont -bg white -fg $::FADarkBlue -justify left
-	grid $c.cpuloadlabel $c.cpuload -sticky w
-
-	label $c.uptimeLabel -text "System Uptime: " -font LabelFont -bg white -fg $::FADarkBlue -justify left
-	label $c.uptime -textvariable ::uptime -font LabelFont -bg white -fg $::FADarkBlue -justify left
-	grid $c.uptimeLabel $c.uptime -sticky w
-
-	grid rowconfigure $f $f.status_sysinfo -weight 0
 }
 
 proc expand_device_status {name option} {

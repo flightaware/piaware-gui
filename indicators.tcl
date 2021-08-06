@@ -609,7 +609,7 @@ proc update_usb_wireless_status {} {
 
 proc button_system {} {
 	#deselect button after being pushed
-	.bottom.3 state "!selected !active"
+	.settings.3 state "!selected !active"
 
 	set menuList {system_settings "System Settings" radio "Radio" localization "Localization" reboot "Reboot" shutdown "Shut Down"}
 	create_newmenu .system "System" "destroy .system" "destroy .system"
@@ -639,8 +639,8 @@ proc button_localization {} {
 
 proc button_map {} {
 	#deselect button after being pushed
-	.bottom.3 state "!selected !active"
-	.bottom.4 state "!selected !active"
+	.settings.3 state "!selected !active"
+	.settings.4 state "!selected !active"
 
 	if {$::urlhint == ""} {
 		set message "SkyAware not running"

@@ -133,25 +133,25 @@ proc update_network_status {} {
 	}
 
 	#Update the map link
-	::fa_sysinfo::route_to_flightaware ::defaultgateway iface ip
-	if {$::defaultgateway ne ""} {
-		set ::dhcpnetmask [::fa_sysinfo::interface_netmask $iface]
-
-		if {[status radio] == "statusGreenIcon"} {
-			grid .bottom.4
-			set ::urlhint "To see a map of aircraft positions, go to this link in a web browser: http://$ip/dump1090-fa"
-		} elseif {[status uat_radio] == "statusGreenIcon"} {
-			grid .bottom.4
-			set ::urlhint "To see a map of aircraft positions, go to this link in a web browser: http://$ip/skyaware978"
-		} else {
-			set ::urlhint ""
-			grid remove .bottom.4
-		}
-	} else {
-		set ::dhcpnetmask ""
-		set ::urlhint ""
-		grid remove .bottom.4
-	}
+	#::fa_sysinfo::route_to_flightaware ::defaultgateway iface ip
+	#if {$::defaultgateway ne ""} {
+	#	set ::dhcpnetmask [::fa_sysinfo::interface_netmask $iface]
+	#
+	#	if {[status radio] == "statusGreenIcon"} {
+	#		grid .settings.4
+	#		set ::urlhint "To see a map of aircraft positions, go to this link in a web browser: http://$ip/skyaware"
+	#	} elseif {[status uat_radio] == "statusGreenIcon"} {
+	#		grid .settings.4
+	#		set ::urlhint "To see a map of aircraft positions, go to this link in a web browser: http://$ip/skyaware978"
+	#	} else {
+	#		set ::urlhint ""
+	#		grid remove .settings.4
+	#	}
+	#} else {
+	#	set ::dhcpnetmask ""
+	#	set ::urlhint ""
+	#	grid remove .settings.4
+	#}
 }
 
 #
