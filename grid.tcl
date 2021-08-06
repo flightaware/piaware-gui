@@ -390,7 +390,7 @@ proc setup_main {} {
 		set menuList {no_radio "Radio" flightaware "FlightAware Connection"}
 	}
 
-	set wraplength [expr ([winfo screenwidth $b] * .8)]
+	set wraplength [expr ([winfo screenwidth $b])]
 
 	foreach {menuName menuText} $menuList {
 		set textpath ""
