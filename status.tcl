@@ -231,6 +231,7 @@ proc periodically_update_piaware_status {} {
 
 		set value [dict create "status" "red" "message" "Couldn't read status file"]
 		set ::piawareStatus $value
+		set_status_indicator piaware $value
 		set_status_indicator mlat $value
 		set_status_indicator flightaware $value
 		set_status_indicator network $value
@@ -253,6 +254,7 @@ proc update_piaware_status {} {
 		switch $name {
 			piaware {
 				set ::piawareStatus $value
+				set_status_indicator piaware $value
 			}
 			mlat {
 				set_status_indicator mlat $value

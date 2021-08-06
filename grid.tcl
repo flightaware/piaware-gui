@@ -374,25 +374,48 @@ proc setup_main {} {
 	label $t.iplabel -textvariable ipaddress_mainmenu -font MenuTopLabel -bg $::MenuBackground -fg white -anchor center
 	pack $t.iplabel -expand 1 -fill x
 
-	#Status and network frames are always active while other menu frames are killed after use
-	#Bring the menu frame forward with the view_frame command
-	ttk::button $b.1 -text "Status" -command "view_frame .status" -style mainMenuRed.TButton -width 18
-	ttk::button $b.2 -text "Network" -command "view_frame .network" -style mainMenuRed.TButton -width 18
-	ttk::button $b.3 -text "System" -command "button_system" -style mainMenu.TButton -width 20
-	ttk::button $b.4 -text "SkyAware Map" -command "button_map" -style mainMenu.TButton -width 20
-	grid $b.1 -columnspan 2 -pady 10
-	grid $b.2 -columnspan 2 -pady 10
-	grid $b.3 -columnspan 2 -pady 10
-	grid $b.4 -columnspan 2 -pady 10
+	piawareConfig read_config
+	if {"beastgps" in $::hardware} {
+		set menuList {radio "1090 Radio" mlat "MLAT" gps "GPS" flightaware "FlightAware Connection"}
+	} elseif {[piawareConfig get receiver-type] ne "none"} {
+                set menuList {radio "1090 Radio" piaware "PiAware" mlat "MLAT" flightaware "FlightAware Connection"}
+	} elseif {[piawareConfig get uat-receiver-type] ne "none"} {
+		set menuList {uat_radio "978 UAT Radio" flightaware "FlightAware Connection"}
+	} else {
+		set menuList {no_radio "Radio" flightaware "FlightAware Connection"}
+	}
+
+	set wraplength [expr ([winfo screenwidth $b] * .8)]
+
+	foreach {menuName menuText} $menuList {
+		set textpath ""
+		append textpath $b.$menuName text
+		ttk::button $b.$menuName -text $menuText -style statusUp.TButton -compound left -image statusRedIcon -width 20 -command "expand_device_status $b.$menuName $textpath"
+		label $textpath -text "No status information" -justify center -font MenuLabel -wraplength $wraplength
+		grid $b.$menuName -columnspan 5 -pady 2
+		grid $textpath -columnspan 5
+		set ::indicator_path($menuName) $b.$menuName
+	}
+
+	#Hide all the text fields
+	foreach {menuName menuText} $menuList {
+		set textpath ""
+		append textpath $b.$menuName text
+		grid remove $textpath
+	}
+
+	ttk::button $b.2 -text "Network Settings" -command "view_frame .network" -style mainMenu.TButton
+	ttk::button $b.3 -text "System Settings" -command "button_system" -style mainMenu.TButton
+	ttk::button $b.4 -text "SkyAware Map" -command "button_map" -style mainMenu.TButton
+
+	grid $b.2 -row 8 -column 0 -padx 10 -pady 5
+	grid $b.3 -row 8 -column 1 -columnspan 2 -padx 10 -pady 5
+	grid $b.4 -row 9 -columnspan 2 -padx 10 -pady 5
 
 	grid rowconfigure $b {0 1} -weight 0
 	grid columnconfigure $b {0 1} -weight 1
 
-	set ::indicator_path(mainmenu_status) $b.1
-	set ::indicator_path(mainmenu_network) $b.2
-
-	#setup the status and network menu frames
-	setup_status_menu
+	#Set up network menu frames
 	setup_network_menu
 }
 
