@@ -17,6 +17,14 @@ pigui ALL = NOPASSWD: /bin/ip
 # allow pigui to call netstat to find network port statuses
 pigui ALL = NOPASSWD: /bin/netstat
 
+# allow pigui to stop/start sshd
+pigui ALL = NOPASSWD: /sbin/update-rc.d ssh enable
+pigui ALL = NOPASSWD: /sbin/invoke-rc.d ssh start
+pigui ALL = NOPASSWD: /sbin/update-rc.d ssh disable
+pigui ALL = NOPASSWD: /sbin/invoke-rc.d ssh stop
+pigui ALL = NOPASSWD: /bin/pkill --signal HUP sshd
+pigui ALL = NOPASSWD: /bin/ssh-keygen -A
+
 # allow pigui to restart the receiver
 pigui ALL = NOPASSWD: /usr/lib/piaware_packages/helpers/restart-receiver
 
