@@ -4,4 +4,4 @@ overlays/*.dt* usr/share/piaware-gui/overlays/
 bootconfig/* usr/share/piaware-gui/bootconfig/
 debian/tmp/usr/lib/*
 debian/tmp/usr/bin/*
-sudoers/ffgui etc/sudoers.d/
+sudoers/pigui etc/sudoers.d/
