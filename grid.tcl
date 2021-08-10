@@ -331,7 +331,8 @@ proc FA_messagebox {parentwindow icon type message} {
 	wm withdraw $w
 	update idletasks
 	set pw [winfo width $p]
-	set ph [winfo height $p]
+	# Reduce size of window if the parent window is .bottom since main menu is now divided into 3
+	set ph [expr {$p eq ".bottom"} ? [expr {int([winfo height $p] / 0.5)}] : [winfo height $p]]
 	set x [expr {($pw - [winfo reqwidth $w])/2}]
 	set y [expr {($ph - [winfo reqheight $w])/2}]
 	if {$x<0} {set x 0}
