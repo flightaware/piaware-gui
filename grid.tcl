@@ -383,6 +383,8 @@ proc setup_main {} {
 	piawareConfig read_config
 	if {"beastgps" in $::hardware} {
 		set menuList {radio "1090 Radio" mlat "MLAT" gps "GPS" flightaware "FlightAware Connection"}
+	} elseif {[piawareConfig get receiver-type] ne "none" && [piawareConfig get uat-receiver-type] ne "none"} {
+		set menuList {radio "1090 Radio" mlat "MLAT" uat_radio "978 UAT Radio" piaware "PiAware" flightaware "FlightAware Connection"}
 	} elseif {[piawareConfig get receiver-type] ne "none"} {
                 set menuList {radio "1090 Radio" piaware "PiAware" mlat "MLAT" flightaware "FlightAware Connection"}
 	} elseif {[piawareConfig get uat-receiver-type] ne "none"} {
@@ -398,7 +400,7 @@ proc setup_main {} {
 		append textpath $b.$menuName text
 		ttk::button $b.$menuName -text $menuText -style statusUp.TButton -compound left -image statusRedIcon -width 20 -command "expand_device_status $b.$menuName $textpath"
 		label $textpath -text "No status information" -justify center -font MenuLabel -wraplength $wraplength
-		grid $b.$menuName -columnspan 5 -pady 1
+		grid $b.$menuName -columnspan 5
 		grid $textpath -columnspan 5
 		set ::indicator_path($menuName) $b.$menuName
 	}
