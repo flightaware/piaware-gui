@@ -1,8 +1,8 @@
-piaware-gui (6.0~dev) UNRELEASED; urgency=medium
+piaware-gui (6.0) UNRELEASED; urgency=medium
 
   * In development
 
- -- Eric Tran <eric.tran@flightaware.com>  Wed, 04 Aug 2021 19:32:56 +0000
+ -- Eric Tran <eric.tran@flightaware.com>  Tue, 17 Aug 2021 19:32:56 -0600
 
 piaware-gui (5.0) stable; urgency=medium
 
