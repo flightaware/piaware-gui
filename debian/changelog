@@ -1,3 +1,9 @@
+piaware-gui (7.0~dev) UNRELEASED; urgency=medium
+
+  * In development
+
+ -- Eric Tran <eric.tran@flightaware.com>  Wed, 24 Nov 2021 12:06:03 -0600
+
 piaware-gui (6.1) stable; urgency=medium
 
   * No-change release for PiAware 6.1
