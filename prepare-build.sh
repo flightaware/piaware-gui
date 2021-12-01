@@ -45,6 +45,11 @@ case "$DIST" in
         ;;
 
     buster)
+        echo "Updating changelog for buster backport build" >&2
+        dch --changelog $OUT/debian/changelog --local ~bpo10+ --force-distribution --distribution buster-backports "Automated backport build for buster"
+        ;;
+
+    bullseye)
         ;;
 
     *)

@@ -2,7 +2,7 @@ Source: piaware-gui
 Section: embedded
 Priority: extra
 Maintainer: FlightAware Developers <adsb-devs@flightaware.com>
-Build-Depends: debhelper(>=9), dh-systemd, tcl
+Build-Depends: debhelper(>=10), tcl
 Standards-Version: 3.9.3
 Homepage: https://github.com/flightaware
 
