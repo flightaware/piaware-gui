@@ -51,7 +51,7 @@ case "$DIST" in
 
     bullseye)
         echo "Updating changelog for bullseye backport build" >&2
-        dch --changelog $OUT/debian/changelog --local ~bpo11+ --force-distribution --distribution bullseye-backports "Automated backport build for bullseye">
+        dch --changelog $OUT/debian/changelog --local ~bpo11+ --force-distribution --distribution bullseye-backports "Automated backport build for bullseye"
         ;;
 
     *)
