@@ -50,8 +50,12 @@ case "$DIST" in
         ;;
 
     bullseye)
-        ;;
-
+        echo "Updating changelog for bullseye backport build" >&2
+        dch --changelog $OUT/debian/changelog --local ~bpo11+ --force-distribution --distribution buster-backports "Automated backport build for bullseye"
+	;;
+    bookworm)
+	echo "Building bookworm" >&2
+	;;
     *)
         echo "Don't know how to build for a distribution named $DIST" >&2
         exit 1
