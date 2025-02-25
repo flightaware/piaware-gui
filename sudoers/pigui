@@ -26,7 +26,7 @@ pigui ALL = NOPASSWD: /bin/pkill --signal HUP sshd
 pigui ALL = NOPASSWD: /bin/ssh-keygen -A
 
 # allow pigui to restart the receiver
-pigui ALL = NOPASSWD: /usr/bin/piaware-restart-receiver 
+pigui ALL = NOPASSWD: /usr/lib/piaware_packages/helpers/restart-receiver
 
 # allow pigui to restart the network
-pigui ALL = NOPASSWD: /usr/bin/piaware-restart-network
+pigui ALL = NOPASSWD: /usr/lib/piaware_packages/helpers/restart-network
