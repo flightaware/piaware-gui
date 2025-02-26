@@ -1,4 +1,10 @@
-piaware-gui (9.0) UNRELEASED; urgency=medium
+piaware-gui (10.0) stable; urgency=medium
+
+  * No change release for 10.0
+
+ -- Nicholas Wan <nicholas.wan@flightaware.com>  Wed, 26 Feb 2025 16:45:13 +0000
+
+piaware-gui (9.0) stable; urgency=medium
 
   * No change release for 9.0
 
