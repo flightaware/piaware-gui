@@ -4,11 +4,7 @@ node(label: 'raspberrypi') {
         durabilityHint(hint: 'PERFORMANCE_OPTIMIZED')
     ])
 
-<<<<<<< HEAD
     def dists = ["bookworm" ,"bullseye", "buster"]
-=======
-    def dists = ["bullseye", "buster"]
->>>>>>> 4ca3903a347e94cafc632f2b3c669366fa031024
     def srcdir = "${WORKSPACE}/src"
 
     stage('Checkout') {
