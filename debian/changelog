@@ -1,15 +1,14 @@
 piaware-gui (10.0) stable; urgency=medium
 
-  [ Eric Tran  ]
-  * No change release for 9.0
-
-  [ Nick Wan ]
-  * No change for release 10.0~dev
-
-  [ Nicholas Wan ]
   * No change release for 10.0
 
  -- Nicholas Wan <nicholas.wan@flightaware.com>  Wed, 26 Feb 2025 16:45:13 +0000
+
+piaware-gui (9.0) stable; urgency=medium
+
+  * No change release for 9.0
+
+ -- Eric Tran  <eric.tran@flightaware.com>  Thu, 16 Nov 2023 16:13:32 +0000
 
 piaware-gui (8.2) stable; urgency=medium
 
