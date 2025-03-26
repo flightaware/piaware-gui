@@ -13,5 +13,5 @@ Description: Tcl/Tk GUI for PiAware
 
 Package: piaware-gui-release
 Architecture: all
-Depends: piaware-gui (= ${binary:Version}), piaware-release (= 9.0.1~bpo11+1)
+Depends: piaware-gui (= ${binary:Version}), piaware-release (= 10.0.1~bpo11+1)
 Description: Metapackage for PiAware SD card images with LCD/GUI support
