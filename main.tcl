@@ -22,6 +22,7 @@ source [file join $scriptdir "json.tcl"]
 source [file join $scriptdir "fa_tailer.tcl"]
 source [file join $scriptdir "radio.tcl"]
 source [file join $scriptdir "keyboard.tcl"]
+source [file join $scriptdir "keypad.tcl"]
 source [file join $scriptdir "ipconfig.tcl"]
 
 # Load touch screen interface (3.2" LCD, 320x240)
