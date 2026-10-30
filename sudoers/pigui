@@ -30,3 +30,8 @@ pigui ALL = NOPASSWD: /usr/lib/piaware_packages/helpers/restart-receiver
 
 # allow pigui to restart the network
 pigui ALL = NOPASSWD: /usr/lib/piaware_packages/helpers/restart-network
+
+# allow the use of commands to Serialize Pro Sticks and Change MHz Modes
+
+pigui ALL = NOPASSWD: /usr/lib/piaware-gui/serialPro
+pigui ALL = NOPASSWD: /usr/lib/piaware-gui/changeMHz

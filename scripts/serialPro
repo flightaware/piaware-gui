@@ -1,0 +1,22 @@
+#!/usr/bin/env bash
+linecount=$(rtl_test -t 2>&1 | grep -n ", RTL2832U" | cut -f1 -d: | tr -d '\n' | wc -m)
+if [ $linecount != 1 ]; then
+    echo "Error: Please ensure only one Pro Stick is connected for serialization" >&2;
+    exit;
+fi
+/bin/systemctl --quiet stop piaware
+/bin/systemctl --quiet stop piaware dump1090-fa
+/bin/systemctl --quiet stop piaware dump978-fa
+MHz=$1
+case "$MHz" in
+    "1090")
+        rtl_eeprom -s 00001090 <<< "y" 2>&1;
+    ;;
+    "978")
+        rtl_eeprom -s 00000978 <<< "y" 2>&1;
+    ;;
+esac
+/bin/systemctl --quiet start piaware
+/bin/systemctl --quiet start piaware dump1090-fa
+/bin/systemctl --quiet start piaware dump978-fa
+echo "Serializing complete. Please reboot the device if needed." >&2;

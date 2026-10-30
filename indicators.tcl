@@ -13,12 +13,18 @@ package require fa_services
 proc detect_mode {} {
 	piawareConfig read_config
 
-	if {[piawareConfig get uat-receiver-type] ne "none"} {
+	if {[piawareConfig get receiver-type] eq "rtlsdr" && [piawareConfig get uat-receiver-type] eq "sdr"} {
+		set ::receiver_mode dual
+		set ::gain_option rtlsdr-gain
+	} elseif {[piawareConfig get uat-receiver-type] eq "sdr"} {
 		set ::receiver_mode uat
 		set ::gain_option uat-sdr-gain
-	} else {
+	} elseif {[piawareConfig get receiver-type] eq "rtlsdr"} {
 		set ::receiver_mode adsb
 		set ::gain_option rtlsdr-gain
+	} else {
+		set ::receiver_mode adsb
+		set ::gain_option rtlsdr-gain		
 	}
 }
 
@@ -186,6 +192,9 @@ proc button_radio {} {
 	} elseif {$::receiver_mode eq "uat"} {
 		# Radio stats not available in UAT mode currently. TODO: generate stats.json in dump978
 		set menuList {radiogain "Radio Gain"}
+	} elseif {$::receiver_mode eq "dual"} {
+		# Radio stats not available in UAT mode currently. TODO: generate stats.json in dump978
+		set menuList {radiogain "Radio Gain" serialize1090 "Serialize Pro Stick to 1090MHz" serialize978 "Serialize Pro Stick to 978MHz"}
 	} else {
 		set menuList {radiostatus "Radio Status" radiogain "Radio Gain"}
 	}
@@ -621,7 +630,7 @@ proc button_system {} {
 
 proc button_system_settings {} {
 #	removed some options for initial version
-	set menuList {status "System Status" log "Log" ssh_configuration "SSH Configuration" calibrate_touchscreen "Calibrate Touchscreen"}
+	set menuList {status "System Status" log "Log" ssh_configuration "SSH Configuration" calibrate_touchscreen "Calibrate Touchscreen" changeMHz "Change Device Mode"}
 	create_newmenu .systemsettings "System Settings" "destroy .systemsettings" "destroy .systemsettings"
 
 	grid [frame .systemsettings.bottom] -row 1 -columnspan 3 -sticky snew
@@ -656,6 +665,105 @@ proc button_status {} {
 	create_textbox .systemstatus
 
 	periodically_update_systemstatus
+}
+
+
+proc button_changeMHz {} {
+	#deselect button after being pushed
+	.settings.3 state "!selected !active"
+
+    if {$::receiver_mode eq "adsb"} {
+        set menuList {change978 "Change Device Mode to 978MHz" changeDual "Change Device Mode to Dual 1090/978MHz"}
+    } elseif {$::receiver_mode eq "uat"} {
+        set menuList {change1090 "Change Device Mode to 1090MHz" changeDual "Change Device Mode to Dual 1090/978MHz"}
+    } elseif {$::receiver_mode eq "dual" } {
+		set menuList {change1090 "Change Device Mode to 1090MHz" change978 "Change Device Mode to 978MHz"}
+	} else {
+		set menuList {serialize1090 "Serialize 1090MHz" serialize978 "Serialize 978MHz" change1090 "Set to 1090MHz" change978 "Set to 978MHz" changeDual "Set to Dual 1090/978MHz"}
+	}
+	
+	create_newmenu .changeMHz "Change Device Mode" "destroy .changeMHz" "destroy .changeMHz"
+
+	grid [frame .changeMHz.bottom] -row 1 -columnspan 3 -sticky snew
+	create_newmenu_options .changeMHz.bottom $menuList
+
+}
+proc button_serialize1090 {} {
+	set message "Serializes Pro Stick for 1090 MHz. Only for Dual Setups. Hit NO to cancel."
+	set answer [FA_messagebox .bottom "question" "yesno" "$message"]
+	if {$answer == "Yes"} {
+		if {[catch {::fa_sudo::exec_as -root -- /usr/lib/piaware-gui/serialPro 1090} result]} {
+		set message "$result"
+		FA_messagebox .bottom "question" "ok" "$message"
+		} else {
+  		set message "Error: $result"
+		FA_messagebox .bottom "question" "ok" "$message"
+		}
+
+		destroy .serialize1090
+	}
+}
+proc button_serialize978 {} {
+	set message "Serializes Pro Stick for 978 MHz. Only needed for Dual Setups. Hit NO to cancel."
+	set answer [FA_messagebox .bottom "question" "yesno" "$message"]
+	if {$answer == "Yes"} {
+		if {[catch {::fa_sudo::exec_as -root -- /usr/lib/piaware-gui/serialPro 978} result]} {
+		set message "$result"
+		FA_messagebox .bottom "question" "ok" "$message"
+		} else {
+  		set message "Error: $result"
+		FA_messagebox .bottom "question" "ok" "$message"
+		}
+		destroy .serialize978
+	}
+}
+proc button_change1090 {} {
+	set message "Switches Device Mode to 1090 MHz"
+	set answer [FA_messagebox .bottom "question" "yesno" "$message"]
+	if {$answer == "Yes"} {
+			if {$answer == "Yes"} {
+		if {[catch {::fa_sudo::exec_as -root -- /usr/lib/piaware-gui/changeMHz 1090 } result]} {
+		set message "Changed Device to 1090 MHz and will now reboot"
+		FA_messagebox .bottom "question" "ok" "$message"
+		::fa_sudo::exec_as -root -- /sbin/shutdown -r now
+		} else {
+		set message "Error: $result"
+		FA_messagebox .bottom "question" "ok" "$message"
+		}
+		destroy .change1090
+	}
+	}
+}
+proc button_change978 {} {
+	set message "Switches Device Mode to 978 MHz"
+	set answer [FA_messagebox .bottom "question" "yesno" "$message"]
+	if {$answer == "Yes"} {
+		if {[catch {::fa_sudo::exec_as -root -- /usr/lib/piaware-gui/changeMHz 978 } result]} {
+		set message "Changed Device to 978 MHz and will now reboot"
+		FA_messagebox .bottom "question" "ok" "$message"
+		::fa_sudo::exec_as -root -- /sbin/shutdown -r now
+		} else {
+		set message "Error: $result"
+		FA_messagebox .bottom "question" "ok" "$message"
+		}
+		destroy .change978
+	}
+}
+
+proc button_changeDual {} {
+	set message "Switches Device Mode to 1090/978 Dual MHz"
+	set answer [FA_messagebox .bottom "question" "yesno" "$message"]
+	if {$answer == "Yes"} {
+		if {[catch {::fa_sudo::exec_as -root -- /usr/lib/piaware-gui/changeMHz Dual } result]} {
+		set message "Changed Device to 1090/978 Dual MHz and will now reboot"
+		FA_messagebox .bottom "question" "ok" "$message"
+		::fa_sudo::exec_as -root -- /sbin/shutdown -r now
+		} else {
+		set message "Error: $result"
+		FA_messagebox .bottom "question" "ok" "$message"
+		}
+		destroy .changeDual
+	}
 }
 
 proc button_ssh_configuration {} {
