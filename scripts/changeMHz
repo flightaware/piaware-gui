@@ -1,0 +1,23 @@
+#!/usr/bin/env bash
+
+MHz=$1
+case "$MHz" in
+    "1090")
+        sudo piaware-config receiver-type rtlsdr;
+        sudo piaware-config uat-receiver-type none;
+        sudo piaware-config rtlsdr-device-index ;
+        sudo piaware-config uat-sdr-device driver=rtlsdr ;
+    ;;
+    "978")
+        sudo piaware-config receiver-type none;
+        sudo piaware-config uat-receiver-type sdr;
+        sudo piaware-config rtlsdr-device-index ;
+        sudo piaware-config uat-sdr-device driver=rtlsdr;
+    ;;
+    "Dual")
+        sudo piaware-config receiver-type rtlsdr;
+        sudo piaware-config uat-receiver-type sdr;
+        sudo piaware-config rtlsdr-device-index 00001090;
+        sudo piaware-config uat-sdr-device driver=rtlsdr,serial=00000978;
+    ;;
+esac
