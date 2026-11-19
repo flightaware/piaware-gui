@@ -123,4 +123,9 @@ if {!$tcl_interactive} {
 	main $argv
 }
 
+
+# maintain a pidfile so we don't get multiple copies of ourself
+# (only does anything if we were invoked with the -p option)
+create_pidfile
+
 # vim: set ts=4 sw=4 sts=4 noet :

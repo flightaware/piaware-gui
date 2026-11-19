@@ -49,6 +49,30 @@ case "$1" in
         fi
     ;;
 
+    remove|deconfigure|failed-upgrade)
+    ;;
+
+    upgrade)
+        # stop piaware, unless it is managing this upgrade
+        # the new version's postinst will start it again
+
+        safe_to_stop=true
+        if [ -f /run/pigui/upgrader.pid ]; then
+            piawarePid=$(cat /var/run/pigui/upgrader.pid)
+            if kill -0 $piawarePid 2>/dev/null; then
+                safe_to_stop=false
+                echo "A running PiAware (pid $piawarePid) is managing this upgrade." >&2
+                echo "It will restart itself once the upgrade is complete." >&2
+            fi
+        fi
+
+        if $safe_to_stop && [ -x "/etc/init.d/piaware" ]; then
+            invoke-rc.d piaware stop || true
+        fi
+
+    ;;
+
+
     abort-upgrade|abort-remove|abort-deconfigure)
     ;;
 

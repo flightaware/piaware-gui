@@ -606,4 +606,55 @@ proc disable_sshd {} {
 	::fa_sudo::exec_as -root -- pkill --signal HUP sshd
 }
 
+
+proc create_pidfile {} {
+	if {[catch {set file "/var/run/pigui/upgrader.pid"} result]} {
+
+		puts "unable to create pidfile $file ($result); is another piaware instance running?"
+		exit 2
+	}
+	puts "after set file"
+	if {$file == ""} {
+		return
+	}
+	
+
+	if {[catch {create_named_pidfile $file} result]} {
+		puts "unable to create pidfile $file ($result); is another piaware instance running?"
+		exit 2
+	}
+}
+
+
+proc create_named_pidfile {path} {
+	puts "creating pidfile $path"
+
+	set f [open $path "a+"]
+	set ok 0
+	try {
+		if {![flock -write -nowait $f]} {
+			error "$path is locked by another process"
+		}
+
+		chan seek $f 0 start
+		chan truncate $f 0
+		puts $f [pid]
+		flush $f
+
+		set ::pidfiles($path) $f
+		set ok 1
+	} finally {
+		if {!$ok} {
+			catch {close $f}
+		}
+	}
+}
+
+
+#
+# create_pidfile - create a pidfile for this process if possible if so
+#   configured
+#
+
+
 # vim: set ts=4 sw=4 sts=4 noet :

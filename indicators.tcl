@@ -611,7 +611,7 @@ proc button_system {} {
 	#deselect button after being pushed
 	.settings.3 state "!selected !active"
 
-	set menuList {system_settings "System Settings" radio "Radio" localization "Localization" reboot "Reboot" shutdown "Shut Down"}
+	set menuList {system_settings "System Settings" radio "Radio" localization "Localization" reboot "Reboot" shutdown "Shut Down" }
 	create_newmenu .system "System" "destroy .system" "destroy .system"
 
 	grid [frame .system.bottom] -row 1 -columnspan 3 -sticky snew
@@ -621,7 +621,7 @@ proc button_system {} {
 
 proc button_system_settings {} {
 #	removed some options for initial version
-	set menuList {status "System Status" log "Log" ssh_configuration "SSH Configuration" calibrate_touchscreen "Calibrate Touchscreen"}
+	set menuList {status "System Status" log "Log" ssh_configuration "SSH Configuration" calibrate_touchscreen "Calibrate Touchscreen" updatePiAware "Update PiAware"}
 	create_newmenu .systemsettings "System Settings" "destroy .systemsettings" "destroy .systemsettings"
 
 	grid [frame .systemsettings.bottom] -row 1 -columnspan 3 -sticky snew
@@ -693,6 +693,52 @@ proc button_ssh_disable {} {
 	}
 	destroy .sshconfig
 }
+
+
+proc button_updatePiAware {} {
+    set message "Update PiAware to the newest version? This process will take several minutes."
+    set answer [FA_messagebox .bottom "question" "yesno" "$message"]
+    if {$answer eq "Yes"} {
+        
+		if { ![file exists "/var/run/pigui/upgrader.pid"] } {
+			puts "setting up Pid"
+			set path "/var/run/pigui/upgrader.pid"
+			
+			puts "creating pidfile"
+
+			# write our pid to /run/piaware/upgrader.pid;
+			# the piaware postinst scripts look for this to avoid
+			# restarting a piaware that is currently managing the
+			# upgrade
+			set upgraderPidfile "/var/run/pigui/upgrader.pid"
+			if {[catch {create_named_pidfile $upgraderPidfile} result]} {
+				puts "couldn't lock $upgraderPidfile: $result"
+				return
+			}
+			puts "After set upgraderPidfile has run"
+		}
+        if {[catch { 
+            ::fa_sudo::exec_as -root -- /usr/lib/piaware/helpers/run-apt-get update 
+            puts "After Update"
+        } result]} { 
+          # Only a warning? Log it and continue 
+             puts "Command returned: $result" 
+        }   
+        if {[catch { 
+            ::fa_sudo::exec_as -root -- /usr/lib/piaware/helpers/run-apt-get upgrade-all 
+            puts "After Upgrade All"
+        } result]} { 
+          # Only a warning? Log it and continue 
+             puts "Command returned: $result" 
+        }   
+        
+        puts "About to Shutdown"
+        ::fa_sudo::exec_as -root -- /sbin/shutdown -r now
+
+    }
+    destroy .updatePiAware
+}
+
 
 #
 # button_calibrate_touchscreen - perform touchscreen calibration
