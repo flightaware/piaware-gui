@@ -33,4 +33,3 @@ pigui ALL = NOPASSWD: /usr/lib/piaware_packages/helpers/restart-network
 
 # allow pigui to update PiAware
 pigui ALL = NOPASSWD: /usr/lib/piaware/helpers/run-apt-get
-pigui ALL = NOPASSWD: /home/pi/pigui/upgrader.pid
